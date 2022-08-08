@@ -13,8 +13,8 @@ export class GitCommit{
 export interface GitAPI{
      getCommits():Promise<LinkedList<GitCommit>>;
      getCurrCommit():Promise<LinkedListNode<GitCommit>>;
-    forward():Promise<void>;
-    backward():Promise<void>
+    forward():Promise<boolean>;
+    backward():Promise<boolean>
 
 
     

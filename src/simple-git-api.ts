@@ -6,9 +6,9 @@ import LinkedListNode from "ts-linked-list/dist/LinkedListNode";
 export class SimpleGitAPI implements GitAPI {
   private commitsCache: LinkedList<GitCommit> | null = null;
   private currCommitCache: LinkedListNode<GitCommit> | null = null;
-  private git:SimpleGit;
-  constructor(path:string){
-    this.git=simpleGit(path);
+  private git: SimpleGit;
+  constructor(path: string) {
+    this.git = simpleGit(path);
   }
   async getCommits(): Promise<LinkedList<GitCommit>> {
     if (this.commitsCache !== null) {
@@ -32,6 +32,9 @@ export class SimpleGitAPI implements GitAPI {
     return list;
   }
   async getCurrCommit(): Promise<LinkedListNode<GitCommit>> {
+    if (this.commitsCache === null) {
+      await this.getCommits();
+    }
     let head = await this.git.revparse("HEAD");
     if (
       this.currCommitCache !== null &&
@@ -39,23 +42,28 @@ export class SimpleGitAPI implements GitAPI {
     ) {
       return this.currCommitCache;
     }
+    //console.log(this.commitsCache);
     let currCommit = this.commitsCache!.findNode((c) => c.hash == head)!;
     return currCommit;
   }
-  async forward(): Promise<void> {
+  async forward(): Promise<boolean> {
     let currCommit = await this.getCurrCommit().then((c) => c.next);
 
     if (currCommit !== null) {
-        this.git.checkout(currCommit.data.hash);
+      this.git.checkout(currCommit.data.hash);
       this.currCommitCache = currCommit;
+      return true;
     }
+    return false;
   }
-  async backward(): Promise<void> {
+  async backward(): Promise<boolean> {
     let currCommit = await this.getCurrCommit().then((c) => c.prev);
 
     if (currCommit !== null) {
-        this.git.checkout(currCommit.data.hash);
+      this.git.checkout(currCommit.data.hash);
       this.currCommitCache = currCommit;
+      return true;
     }
+    return false;
   }
 }
