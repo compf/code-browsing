@@ -18,6 +18,10 @@
       {
         "command": "code-browsing.git-prev",
         "title": "Previous git commit"
+      },
+      {
+        "command": "code-browsing.git-next",
+        "title": "Next git commit"
       }
     ]
   },
