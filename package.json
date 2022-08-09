@@ -10,10 +10,28 @@
     "Other"
   ],
   "activationEvents": [
-    "onCommand:code-browsing.git-prev"
+    "*:coding_browser_panel_gui"
   ],
   "main": "./dist/extension.js",
   "contributes": {
+    "menus": {
+      "view/title": [
+        {
+          "command": "code-browsing.git-prev-this-file",
+          "group": "navigation"
+          
+        }
+      ]
+    },
+    "views": {
+      "coding_browser_panel_button":[
+        {
+          "id":"coding_browser_panel_gui",
+          "name":"Coding Browser"
+        }
+      ]
+       
+      },
     "commands": [
       {
         "command": "code-browsing.git-prev",
@@ -22,8 +40,27 @@
       {
         "command": "code-browsing.git-next",
         "title": "Next git commit"
+      },
+      {
+        "command": "code-browsing.git-next-this-file",
+        "title": "Next version of this file"
+      },
+      {
+        "command": "code-browsing.git-prev-this-file",
+        "title": "Previous version of this file"
       }
-    ]
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "coding_browser_panel_button",
+          "title": "Coding Browser",
+          "icon": "icons/code-svgrepo-com.svg"
+
+
+        }
+      ]
+    }
   },
   "extensionDependencies": [
     "vscode.git"

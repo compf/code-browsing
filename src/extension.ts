@@ -3,35 +3,22 @@
 import * as vscode from "vscode";
 import { GitAPI } from "./git_api";
 import { SimpleGitAPI } from "./simple-git-api";
+function registerCommand(name:string,context: vscode.ExtensionContext,action:()=>void){
+  let disposable=vscode.commands.registerCommand(name,action);
+  context.subscriptions.push(disposable);
+}
 let git:GitAPI|null=null;
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
-    vscode.window.showInformationMessage(vscode.workspace.workspaceFolders![0]!.uri.fsPath);
     git=new SimpleGitAPI(vscode.workspace.workspaceFolders![0]!.uri.fsPath);
-  let disposable = vscode.commands.registerCommand(
-    "code-browsing.git-prev",
+ registerCommand(
+    "code-browsing.git-prev",context,
     async () => {
-      // The code you place here will be executed every time your command is executed
-
-      // Display a message box to the user
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
       await git!.backward();
-    }
-   
+    }   
   );
-  context.subscriptions.push(disposable);
-  disposable=vscode.commands.registerCommand("code-browsing.git-next",async ()=>{
+  registerCommand("code-browsing.git-next",context,async ()=>{
     await git!.forward();
   });
 }
