@@ -6,6 +6,15 @@ const SIMPLE_COMMIT_PATH="testDir/simpleCommits";
 	expect(commits.length).toBe(2);
 
 });
+test("Test file changes",async ()=>{
+	let gitApi=new SimpleGitAPI(SIMPLE_COMMIT_PATH);
+	let commits =await gitApi.getCommits();
+	let first=commits.head?.value;
+	expect(first?.changes).toHaveLength(1);
+	let second=commits.tail?.value;
+	expect(second?.changes).toHaveLength(1);
+
+})
 test ("Test git backwards, forward",async ()=>{
 	const SECOND_COMMIT="8cc7df233cc2f148207a1d84f03f8155cbe82347";
 	const FIRST_COMMIT="0605baf1cbf421d8bf58823658466e1e2c3384b2";

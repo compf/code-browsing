@@ -14,13 +14,13 @@ export class SimpleGitAPI implements GitAPI {
     if (this.commitsCache !== null) {
       return this.commitsCache;
     }
-    let log = await this.git.log();
+    let log = await this.git.log(["--stat=4096"]);
     let list = new LinkedList<GitCommit>();
     for (let l of log.all) {
       let commit = new GitCommit(
         l.hash,
         new Date(Date.parse(l.date)),
-        l.message
+        l.message,l.diff?.files?.map(( f)=>f.file)??[]
       );
       if (list.head === null) {
         list.append(commit);
@@ -30,6 +30,10 @@ export class SimpleGitAPI implements GitAPI {
     }
     this.commitsCache = list;
     return list;
+  }
+  async getCommitsByPath(path: string): Promise<LinkedList<GitCommit>> {
+      let commits=await this.getCommits();
+      return commits;
   }
   async getCurrCommit(): Promise<LinkedListNode<GitCommit>> {
     if (this.commitsCache === null) {
@@ -42,15 +46,16 @@ export class SimpleGitAPI implements GitAPI {
     ) {
       return this.currCommitCache;
     }
-    //console.log(this.commitsCache);
-    let currCommit = this.commitsCache!.findNode((c) => c.hash == head)!;
+
+    let currCommit = this.commitsCache!.findNode((c) => c.hash === head)!;
+    console.log(currCommit.data);
     return currCommit;
   }
   async forward(): Promise<boolean> {
     let currCommit = await this.getCurrCommit().then((c) => c.next);
 
     if (currCommit !== null) {
-      this.git.checkout(currCommit.data.hash);
+      this.git.checkout(currCommit.data.hash,["-f"]);
       this.currCommitCache = currCommit;
       return true;
     }
@@ -60,7 +65,7 @@ export class SimpleGitAPI implements GitAPI {
     let currCommit = await this.getCurrCommit().then((c) => c.prev);
 
     if (currCommit !== null) {
-      this.git.checkout(currCommit.data.hash);
+      this.git.checkout(currCommit.data.hash,["-f"]);
       this.currCommitCache = currCommit;
       return true;
     }
