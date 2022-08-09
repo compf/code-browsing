@@ -7,6 +7,7 @@ export class SimpleGitAPI extends GitAPI {
   private commitsCache: LinkedList<GitCommit> | null = null;
   private currCommitCache: LinkedListNode<GitCommit> | null = null;
   private git: SimpleGit;
+  private fileNameCommitMap:Map<string,LinkedList<GitCommit>>=new Map();
   constructor(path: string) {
     super();
     this.git = simpleGit(path);
@@ -23,6 +24,12 @@ export class SimpleGitAPI extends GitAPI {
         new Date(Date.parse(l.date)),
         l.message,l.diff?.files?.map(( f)=>f.file)??[]
       );
+      for(let f of l.diff?.files??[]){
+        if(!this.fileNameCommitMap.has(f.file)){
+          this.fileNameCommitMap.set(f.file,new LinkedList());
+        }
+        this.fileNameCommitMap.get(f.file)?.prepend(commit);
+      }
       if (list.head === null) {
         list.append(commit);
       } else {
@@ -33,8 +40,7 @@ export class SimpleGitAPI extends GitAPI {
     return list;
   }
   async getCommitsByPath(path: string): Promise<LinkedList<GitCommit>> {
-      let commits=await this.getCommits();
-      return commits;
+      return this.fileNameCommitMap.get(path)??new LinkedList();
   }
   async getCurrCommit(): Promise<LinkedListNode<GitCommit>> {
     if (this.commitsCache === null) {

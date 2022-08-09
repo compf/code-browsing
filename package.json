@@ -10,28 +10,10 @@
     "Other"
   ],
   "activationEvents": [
-    "*:coding_browser_panel_gui"
+    "onLanguage:cpp"
   ],
   "main": "./dist/extension.js",
   "contributes": {
-    "menus": {
-      "view/title": [
-        {
-          "command": "code-browsing.git-prev-this-file",
-          "group": "navigation"
-          
-        }
-      ]
-    },
-    "views": {
-      "coding_browser_panel_button":[
-        {
-          "id":"coding_browser_panel_gui",
-          "name":"Coding Browser"
-        }
-      ]
-       
-      },
     "commands": [
       {
         "command": "code-browsing.git-prev",
@@ -50,6 +32,31 @@
         "title": "Previous version of this file"
       }
     ],
+    "menus": {
+      "view/title": [
+        {
+          "command": "code-browsing.git-prev-this-file",
+          "group": "navigation"
+          
+        },
+        {
+          "command": "code-browsing.git-next-this-file",
+          "group": "navigation"
+          
+        }
+        
+      ]
+    },
+    "views": {
+      "coding_browser_panel_button":[
+        {
+          "id":"coding_browser_panel_gui",
+          "name":"Coding Browser"
+        }
+      ]
+       
+      },
+   
     "viewsContainers": {
       "activitybar": [
         {
