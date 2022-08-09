@@ -12,12 +12,27 @@ export class GitCommit{
         this.changes=changes;
     }
 }
-export interface GitAPI{
-     getCommits():Promise<LinkedList<GitCommit>>;
-     getCommitsByPath(path:string):Promise<LinkedList<GitCommit>>;
-     getCurrCommit():Promise<LinkedListNode<GitCommit>>;
-    forward():Promise<boolean>;
-    backward():Promise<boolean>;
+export  abstract class GitAPI{
+     abstract getCommits():Promise<LinkedList<GitCommit>>;
+     abstract getCommitsByPath(path:string):Promise<LinkedList<GitCommit>>;
+     abstract getCurrCommit():Promise<LinkedListNode<GitCommit>>;
+    async forward():Promise<boolean>{
+        let nextCommit= (await this.getCurrCommit()).next;
+        if(nextCommit!==null){
+            this.goto(nextCommit.data.hash);
+            return true;
+        }
+        return false;
+    }
+   async backward():Promise<boolean>{
+    let prevCommit= (await this.getCurrCommit()).prev;
+    if(prevCommit!==null){
+        this.goto(prevCommit.data.hash);
+        return true;
+    }
+    return false;
+    }
+    abstract goto(hash:string):Promise<void>;
 
 
     

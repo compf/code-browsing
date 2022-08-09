@@ -3,11 +3,12 @@ import LinkedList from "ts-linked-list";
 import { GitAPI, GitCommit } from "./git_api";
 import simpleGit, { SimpleGit } from "simple-git";
 import LinkedListNode from "ts-linked-list/dist/LinkedListNode";
-export class SimpleGitAPI implements GitAPI {
+export class SimpleGitAPI extends GitAPI {
   private commitsCache: LinkedList<GitCommit> | null = null;
   private currCommitCache: LinkedListNode<GitCommit> | null = null;
   private git: SimpleGit;
   constructor(path: string) {
+    super();
     this.git = simpleGit(path);
   }
   async getCommits(): Promise<LinkedList<GitCommit>> {
@@ -51,24 +52,9 @@ export class SimpleGitAPI implements GitAPI {
     console.log(currCommit.data);
     return currCommit;
   }
-  async forward(): Promise<boolean> {
-    let currCommit = await this.getCurrCommit().then((c) => c.next);
-
-    if (currCommit !== null) {
-      this.git.checkout(currCommit.data.hash,["-f"]);
-      this.currCommitCache = currCommit;
-      return true;
-    }
-    return false;
-  }
-  async backward(): Promise<boolean> {
-    let currCommit = await this.getCurrCommit().then((c) => c.prev);
-
-    if (currCommit !== null) {
-      this.git.checkout(currCommit.data.hash,["-f"]);
-      this.currCommitCache = currCommit;
-      return true;
-    }
-    return false;
+  async goto(hash: string): Promise<void> {
+     await this.git.checkout(hash,["-f"]);
+     this.currCommitCache=this.commitsCache?.findNode((c)=>c.hash===hash)!;
+     console.log(this.currCommitCache.data);
   }
 }
